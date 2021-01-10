@@ -1,0 +1,32 @@
+Replay format 1.21
+
+#File identifiers
+4 bytes -> Checksumm
+4 bytes -> Number of Chunks in this section (should be 1)
+4 bytes -> Length of Chunk
+4 bytes -> Replay ID
+
+# Replay headers
+4 bytes -> value approximately equal to the size of the file in bytes
+4 bytes -> Checksum
+4 bytes -> Number of Chunks in this section (should be one)
+4 bytes -> Length of the chunk (call it X)
+Next X bytes are part of the header
+
+1 byte -> engine identifier
+4 bytes -> frame count
+4 bytes -> start time timestamp
+16 bytes -> UNKNOWN
+28 bytes -> tileset
+2 bytes -> map width
+2 bytes -> map height
+1 byte -> available slots count
+1 byte -> game speed
+2 bytes -> game type
+2 bytes -> game sub-type?
+10 bytes -> UNKNOWN
+24 bytes -> game host
+26 bytes -> game name
+38 bytes -> UNKNOWN
+
+<< next 432 bytes are player data >>
