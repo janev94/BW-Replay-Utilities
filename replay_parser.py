@@ -106,11 +106,8 @@ def parse(fname):
     return headers
 
 
-def batch_parse(args):
-    replay_root = args.rep_root
-    batch = args.batch
-    print_all = args.print_all
-
+def batch_parse(replay_root):
+    output = []
     for path, _, files in os.walk(replay_root):
         if files:
             series_length = 0
@@ -129,13 +126,15 @@ def batch_parse(args):
                     players_series = players_series.union(players)
 
                 if print_all:
-                    print(f'{fname}: {parsed["time_formatted"]} {players}')
+                    output.append(f'{fname}: {parsed["time_formatted"]} {players}')
             
             if series_length and batch:
                 #normalise time
                 series_duration = datetime.timedelta(seconds=series_length)
                 series_duration = str(series_duration).split('.')[0]
-                print(f'{path}: {series_duration} {players_series}')
+                output.append(f'{path}: {series_duration} {players_series}')
+
+    return '\n'.join(output)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="SC:R replay statistics")
@@ -154,4 +153,11 @@ if __name__ == '__main__':
         args = parser.parse_args(config, args)
     else:
         print("Config file not found, accepting arguments from cmd line")
-    batch_parse(args)
+
+    global replay_root, batch, print_all 
+    replay_root = args.rep_root
+    batch = args.batch
+    print_all = args.print_all
+    
+    output = batch_parse(replay_root)
+    print(output)
