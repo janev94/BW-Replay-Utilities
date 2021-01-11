@@ -18,8 +18,9 @@ Features:
 ## Quick start guide
 
 The easiest way to get started is either:
-1. Going to the [project's official wiki](https://github.com/janev94/BW-Replay-Utilities/wiki/BW-Replay-Utilities-Home) page and obtaining the latest binaries.
-2. Heading to the releases section on this page and downloading any of the binaries there.
+1. Heading to the [releases][releases] section on this page and downloading any of the binaries there.
+2. Going to the [project's official wiki](https://github.com/janev94/BW-Replay-Utilities/wiki/BW-Replay-Utilities-Home) page and obtaining the latest binaries.
+
 
 ⚠️⚠️⚠️ **WARNING:
 Binary files can harm or compromise your PC. To ensure you are obtaining developer approved binaries without any malware attached, ONLY download sources for this from the official wiki page!** ⚠️⚠️⚠️
@@ -50,5 +51,6 @@ If you wish to contribute to the project you can do it by:
 [<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif">][paypal]
 [<img src="https://c5.patreon.com/external/favicon/android-chrome-192x192.png?v=jw6AR4Rg74" height="50">][patreon]
 
+[releases] https://github.com/janev94/BW-Replay-Utilities/releases
 [paypal]: https://www.paypal.com/donate?hosted_button_id=ZXKVZTDUKU4MY
 [patreon]: https://www.patreon.com/bw_replay_utilities
