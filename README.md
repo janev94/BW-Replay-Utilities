@@ -17,7 +17,9 @@ Features:
 
 ## Quick start guide
 
-The easiest way to get started is going to the [project's official wiki](https://github.com/janev94/BW-Replay-Utilities/wiki/BW-Replay-Utilities-Home) page and obtaining the latest binaries.
+The easiest way to get started is either:
+1. Going to the [project's official wiki](https://github.com/janev94/BW-Replay-Utilities/wiki/BW-Replay-Utilities-Home) page and obtaining the latest binaries.
+2. Heading to the releases section on this page and downloading any of the binaries there.
 
 ⚠️⚠️⚠️ **WARNING:
 Binary files can harm or compromise your PC. To ensure you are obtaining developer approved binaries without any malware attached, ONLY download sources for this from the official wiki page!** ⚠️⚠️⚠️
