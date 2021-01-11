@@ -80,6 +80,8 @@ while True:
                 replay_parser.print_all = False
                 out = batch_parse(filename)
             else:
+                # if it's a file we need to remove the . that we added for displaying purposes
+                filename = os.path.join(os.path.normpath(values["-FILE_EXPLORER-"]), values["-FILE LIST-"][0][1:])
                 parsed = replay_parser.parse(filename)
                 if not parsed:
                     # Parsing failed for any reason, e.g., replay was not 1.21
