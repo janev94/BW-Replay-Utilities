@@ -40,3 +40,11 @@ If you wish to contribute to the project you can do it by:
 
  Currently the only dependency before you can get started is to obtain python3.4+
 
+
+### Support
+
+ BW Replay Utilities is **FREE** and I intend to leave it that way. In any case, if you would like to say thank you or support me, you can do so by any of the following ways:
+
+[<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif">][paypal]
+
+[paypal]: https://www.paypal.com/donate?hosted_button_id=ZXKVZTDUKU4MY
