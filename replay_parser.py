@@ -94,34 +94,53 @@ def parse(fname):
     with open(fname, 'rb') as f:
         content = f.read()
     
-    check_replay_version(content)
+    try:
+        check_replay_version(content)
+    except Exception as e:
+        print(f"Warning: Replay file {fname} is of an older version, skipping...")
+        return {}
 
     headers = parse_replay_header(content)
 
     return headers
 
 
-def batch_parse(parser):
-    args = parser.parse_args()
+def batch_parse(args):
     replay_root = args.rep_root
+    batch = args.batch
+    print_all = args.print_all
 
     for path, _, files in os.walk(replay_root):
         if files:
-            # series_length = 0
-            # players_series = set()
+            series_length = 0
+            players_series = set()
             for rep in files:
                 if not rep.endswith('.rep'):
                     continue
                 fname = os.path.join(path, rep)
-                headers = parse(fname)
-                players_list = set([ x['player_name'] for x in headers['player_info'] ])
+                parsed = parse(fname)
+                if not parsed:
+                    # Parsing failed for any reason, e.g., replay was not 1.21
+                    continue
+                players = set([ x['player_name'] for x in parsed['player_info'] ])
+                if batch:
+                    series_length += parsed['time_seconds'] 
+                    players_series = players_series.union(players)
 
-                print(f'{fname}: {headers["time_formatted"]} {players_list}')
-
+                if print_all:
+                    print(f'{fname}: {parsed["time_formatted"]} {players}')
+            
+            if series_length and batch:
+                #normalise time
+                series_duration = datetime.timedelta(seconds=series_length)
+                series_duration = str(series_duration).split('.')[0]
+                print(f'{path}: {series_duration} {players_series}')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="SC:R replay statistics")
 
     parser.add_argument('--rep_root', default='.')
-    parser.add_argument('--screp_bin', default='.')
-    batch_parse(parser)
+    parser.add_argument('--batch', default=True)
+    parser.add_argument('--print_all', default=True)
+    args = parser.parse_args()
+    batch_parse(args)
