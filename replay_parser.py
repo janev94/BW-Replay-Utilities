@@ -5,6 +5,7 @@ import struct
 import datetime
 import functools
 import argparse
+import json
 
 FRAME_TO_MILLIS = 42
 
@@ -143,4 +144,14 @@ if __name__ == '__main__':
     parser.add_argument('--batch', default=True)
     parser.add_argument('--print_all', default=True)
     args = parser.parse_args()
+
+    if os.path.exists(os.path.join('.', 'config.json')):
+        with open('config.json') as f:
+            config = json.load(f)
+
+        config = [['--' + k, v] for k, v in config.items() if v and k in args]
+        config = functools.reduce(lambda x, y: x + y, config)
+        args = parser.parse_args(config, args)
+    else:
+        print("Config file not found, accepting arguments from cmd line")
     batch_parse(args)
