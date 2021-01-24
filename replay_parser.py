@@ -126,15 +126,17 @@ def batch_parse(replay_root):
                     players_series = players_series.union(players)
 
                 if print_all:
-                    output.append(f'{fname}: {parsed["time_formatted"]} {players}')
+                    output.append({'path': fname, 'elapsed_time': parsed['time_formatted'], 'players': players})
+                    # output.append(f'{fname}: {parsed["time_formatted"]} {players}')
             
             if series_length and batch:
                 #normalise time
                 series_duration = datetime.timedelta(seconds=series_length)
                 series_duration = str(series_duration).split('.')[0]
                 output.append(f'{path}: {series_duration} {players_series}')
+                output.append({'path': path, 'elapsed_time': series_duration, 'players': players_series, 'is_dir': True})
 
-    return '\n'.join(output)
+    return output
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="SC:R replay statistics")
