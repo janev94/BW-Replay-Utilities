@@ -33,7 +33,7 @@ def sort_table_by(*,table, key, headings, table_data, data):
             break
     table_data = list(table_data)
     if sort_idx:
-        table_data = sorted(table_data, key=lambda x: x['elapsed_time'])
+        table_data = sorted(table_data, key=lambda x: x['elapsed_time_seconds'])
     else:
         table_data = sorted(table_data, key=lambda x: x['path'])
     
