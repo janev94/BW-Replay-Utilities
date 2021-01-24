@@ -1,26 +1,43 @@
 import sys
 import PySimpleGUI as sg
-# from faker import Faker
-from random import randint
-import random
-import string
 from replay_parser import batch_parse
 import replay_parser
 
-# ------------------ Create a fake table ------------------
-# class Faker():
-#     def word(self):
-#         return ''.join(random.choice(string.ascii_lowercase) for i in range(10))
-
-# fake = Faker()
 NUM_ROWS = 2
 NUM_COLS = 2
 
 ROW_DISPLAY = 15
 
 
-# def rand(max=1000):
-#     return randint(0, max)
+def populate_table(table, raw_data, table_data):
+    records = []
+    dir_entry_idx = []
+    for idx, record in enumerate(raw_data):
+        name = record['path']
+        duration = record['elapsed_time']
+        records.append([name, duration])
+        if record.get('is_dir'):
+            dir_entry_idx.append((idx + 1, 'black'))
+
+
+    table_data = [table_data[0]] + records
+
+    table.Update(table_data, row_colors=dir_entry_idx)
+
+
+def sort_table_by(*,table, key, headings, table_data, data):
+    sort_idx = -1
+    for idx, heading  in enumerate(headings):
+        if heading.lower().strip() == key:
+            sort_idx = idx
+            break
+    table_data = list(table_data)
+    if sort_idx:
+        table_data = sorted(table_data, key=lambda x: x['elapsed_time'])
+    else:
+        table_data = sorted(table_data, key=lambda x: x['path'])
+    
+    populate_table(table, table_data, data)
 
 
 def main():
@@ -38,72 +55,96 @@ def main():
                 sg.In(size=(80, 1), enable_events=True, key="_FILE_EXPLORER_"),
                 sg.FolderBrowse(),
                 sg.Text("Filters:"),
-                sg.Checkbox('Folders', default=True),
-                sg.Checkbox('Replays', default=True)
+                sg.Checkbox('Folders', default=True, key='_filter_folders_', enable_events=True),
+                sg.Checkbox('Replays', default=True, key='_filter_files_', enable_events=True)
             ],
-        [sg.Table(values=data[1:][:], headings=headings,  # max_col_width=25,
-                            # auto_size_columns=True,
+            [
+                sg.Text("Sort on:"),
+                *[sg.Radio(heading, 'SORT_KEYS', key=f'_radio_{heading.lower().strip()}_', enable_events=True) for heading in headings]
+            ],
+        [sg.Table(values=data[1:][:], headings=headings,  
+                            auto_size_columns=True,
                              display_row_numbers=True,
-                            vertical_scroll_only=False, enable_events=False, bind_return_key=True,
+                            vertical_scroll_only=False, enable_events=True, bind_return_key=True,
                                 justification='left', num_rows=ROW_DISPLAY, font='Courier 12',
-                                #alternating_row_color='lightblue',
                                 key='_table_',
-                                # background_color='yellow',
                                 row_colors=[(5, 'white', 'black')],
-                                # size=(800, 800),
-                                col_widths=(500, 500)
+                                # col_widths=(500, 500) Colwidths are infered from header width :/
                                 )],
-                # [sg.Button('Read'), sg.Button('Double')],
-                # [sg.T('Read = read which rows are selected')], [
-                    # sg.T('Double = double the amount of data in the table')],
-                # [sg.T('Selected rows = '), sg.T(
-                    # '', size=(30, 1), key='_selected_rows_')],
-                # [sg.Exit()]
                 ]
 
     # ------------------ Create the window ------------------
     window = sg.Window('Table', grab_anywhere=False,
                         resizable=True).Layout(layout)
-    # Change the displayed starting row numberer and the column heading for the row number
-    #window.FindElement('_table_').StartingRowNumber = 1
-    #window.FindElement('_table_').RowHeaderText = 'Row'
 
+    memoized = {}
+    parsed = None
+    filtered_data = None
     # ------------------ The Event Loop ------------------
     while True:
             event, values = window.Read()
             if event in (None, 'Exit'):
                 break
-            # if event == 'Double':
-            #     for i in range(len(data)):
-            #         data.append(data[i])
-            #     window.FindElement('_table_').Update(values=data)
-            # if event == 'Read':
-            #     window.Element('_selected_rows_').Update(values['_table_'])
-            #     data[1][1] = 'updated'
-                # window.Element('_table_').Update(data, row_colors=[(6, 'black')])
             if event == '_FILE_EXPLORER_':
                 filename = values['_FILE_EXPLORER_']
-                print(filename)
+                window.Element('_filter_folders_').update(value=True)
+                window.Element('_filter_files_').update(value=True)
+                window.Element('_radio_name_').update(value=True)
                 replay_parser.batch = True
                 replay_parser.print_all = True
-                parsed = batch_parse(filename)
-                # print(parsed)
-                parsed = parsed.split('\n')
+                
+                if filename in memoized:
+                    parsed = memoized[filename]
+                else:
+                    parsed = batch_parse(filename)
+                    memoized[filename] = parsed
+                filtered_data = parsed
 
-                #TODO: Gonna need to fix that
-                records = []
-                dir_entry_idx = []
-                for idx, record in enumerate(parsed):
-                    name, rest = record.split(': ', 1)
-                    duration = rest.split(' ')[0].strip()
-                    # col_widths = (max(len(name), col_widths[0]), max(len(duration), col_widths[1]))
-                    records.append([name, duration])
-                    if not name.endswith('.rep'):
-                        dir_entry_idx.append((idx + 1, 'black'))
+                sort_table_by(table=window.Element('_table_'), key='name', headings=headings, table_data=filtered_data, data=data)
 
-                data = [data[0]] + records
+                populate_table(window.Element('_table_'), parsed, data)
+            if event == '_filter_folders_':
+                if parsed:
+                    filter_folders = values['_filter_folders_']
+                    filter_files = values['_filter_files_']
+                    if filter_folders and filter_files:
+                        filtered_data = parsed
+                    elif filter_folders or filter_files: 
+                        filtered_data = filter(lambda x: bool(x.get('is_dir')) == values['_filter_folders_'], parsed)
+                        filtered_data = list(filtered_data)
+                    
+                    else:
+                        filtered_data = []
 
-                window.Element('_table_').Update(data, row_colors=dir_entry_idx)
+                    if values['_radio_duration_']:
+                        #TODO: might cause problems if more keys are introduced
+                        sort_table_by(table=window.Element('_table_'), key='duration', headings=headings, table_data=filtered_data, data=data)
+                        continue
+
+                    populate_table(window.Element('_table_'), filtered_data, data)
+            if event == '_filter_files_':
+                if parsed:
+                    filter_folders = values['_filter_folders_']
+                    filter_files = values['_filter_files_']
+                    if filter_folders and filter_files:
+                        filtered_data = parsed
+                    elif filter_files or filter_folders:
+                        filtered_data = filter(lambda x: not bool(x.get('is_dir')) == filter_files, parsed)
+                        filtered_data = list(filtered_data)
+                    
+                    else:
+                        filtered_data = []
+
+                    if values['_radio_duration_']:
+                        #TODO: might cause problems if more keys are introduced
+                        sort_table_by(table=window.Element('_table_'), key='duration', headings=headings, table_data=filtered_data, data=data)    
+                        continue
+
+                    populate_table(window.Element('_table_'), filtered_data, data)
+            if event.startswith('_radio'):
+                if parsed:
+                    sort_key = event.replace('_radio_', '')[:-1]
+                    sort_table_by(table=window.Element('_table_'), key=sort_key, headings=headings, table_data=filtered_data, data=data)
 
     # ------------------ User closed window so exit ------------------
     window.Close()
