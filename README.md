@@ -13,14 +13,11 @@ Features:
     1. Series length
     2. Players
 3. Mass Renaming **(Planned)**
-4. Filter replays based on given criteria **(Planned)**
+4. Filter replays based on given criteria, e.g., Upgrade X started before Y minute **(Planned)**
 
 ## Quick start guide
 
-The easiest way to get started is either:
-1. Heading to the [releases][release-section] section on this page and downloading any of the binaries there.
-2. Going to the [project's official wiki](https://github.com/janev94/BW-Replay-Utilities/wiki/BW-Replay-Utilities-Home) page and obtaining the latest binaries.
-
+The easiest way to get started is to head to the [releases][release-section] section on this page and download any of the binaries there (latest one is recommended).
 
 ⚠️⚠️⚠️ **WARNING:
 Binary files can harm or compromise your PC. To ensure you are obtaining developer approved binaries without any malware attached, ONLY download sources for this from the official wiki page!** ⚠️⚠️⚠️
@@ -34,7 +31,7 @@ You can report bugs or request features by ussing the issues menu at the top of 
 ## Contributing
 
 If you wish to contribute to the project you can do it by:
-1. Obtain the pre-requisites
+1. Obtaining the pre-requisites
 2. Cloning the repository
 3. Adding your feature
 4. Creating a pull request
