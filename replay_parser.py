@@ -133,7 +133,7 @@ def batch_parse(replay_root):
                 #normalise time
                 series_duration = datetime.timedelta(seconds=series_length)
                 series_duration = str(series_duration).split('.')[0]
-                output.append(f'{path}: {series_duration} {players_series}')
+                # output.append(f'{path}: {series_duration} {players_series}')
                 output.append({'path': path, 'elapsed_time': series_duration, 'players': players_series, 'is_dir': True})
 
     return output
