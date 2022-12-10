@@ -104,7 +104,7 @@ def parse(fname):
     return headers
 
 
-def batch_parse(replay_root):
+def batch_parse(replay_root, batch, print_all):
     output = []
     for path, _, files in os.walk(replay_root):
         if files:
@@ -154,10 +154,8 @@ if __name__ == '__main__':
     else:
         print("Config file not found, accepting arguments from cmd line")
 
-    global replay_root, batch, print_all 
     replay_root = args.rep_root
     batch = args.batch
     print_all = args.print_all
-    
-    output = batch_parse(replay_root)
+    output = batch_parse(replay_root=replay_root, batch=batch, print_all=print_all)
     print(output)
