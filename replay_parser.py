@@ -1,7 +1,5 @@
 import os
-import binascii
 import zlib
-import struct
 import datetime
 import functools
 import argparse
