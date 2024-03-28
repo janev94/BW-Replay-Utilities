@@ -103,6 +103,17 @@ def parse(fname):
 
     return headers
 
+def parse_bytestream(content):
+    try:
+        check_replay_version(content)
+    except Exception as e:
+        print(f"Warning: Replay file is of an older version, skipping...")
+        return {}
+
+    headers = parse_replay_header(content)
+
+    return headers
+
 
 def batch_parse(replay_root, batch, print_all):
     output = []
