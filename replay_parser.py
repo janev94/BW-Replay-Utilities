@@ -5,7 +5,7 @@ import functools
 import argparse
 import json
 
-FRAME_TO_MILLIS = 42
+FRAME_TO_MILLISEC = 42
 
 def is_zlib_compressed(data):
     unsigned_byte = data[1] & 0xFF
@@ -35,7 +35,7 @@ def parse_replay_header(content):
         decompressed = content[32:]
 
     frame_count = read_int(buffer=decompressed, start_idx=1)
-    secs = frame_count * 42 / 1000
+    secs = frame_count * FRAME_TO_MILLISEC / 1000
     headers['time_seconds'] = secs
     duration = datetime.timedelta(seconds=secs)
     duration = str(duration).split('.')[0] # remove millisecond part, we do not want to be _that_ precise
@@ -53,8 +53,21 @@ def parse_replay_header(content):
 
     headers['map_name'] = map_name
 
-    headers['player_info'] = get_player_data(decompressed[161: 161 + 432])
 
+    player_data = get_player_data(decompressed[161: 161 + 432])
+    # Get the colours
+    TOP_VS_BOTTOM_IDENTIFIER = 15
+    print(int.to_bytes(6, length=2, byteorder='little'))
+    if int.from_bytes(decompressed[60:62], byteorder='little') != TOP_VS_BOTTOM_IDENTIFIER:
+        #TODO this is hardcoded, detect number of players and think of reasonable colours
+        # Needs to go to a separete function
+        pass
+    else:
+        for i in range(len(player_data)):
+            player_data[i]['colour'] = read_int(buffer=decompressed, start_idx=593 + i*4)
+
+    headers['player_info'] = player_data
+    
     return headers
 
 
@@ -75,10 +88,6 @@ def get_player_data(player_buffer):
         player['player_race'] = player_chunk_bytes[9]
         player['player_team'] = player_chunk_bytes[10]
         player['player_name'] = player_chunk_bytes[11: 11+25]
-
-        # # Colour info
-        # slot_colour_start_idx = 593 + i * 4
-        # player['colour'] = read_int(buffer = player_buffer, start_idx=slot_colour_start_idx)
 
 
         r = functools.reduce(lambda a,b: a+b, player['player_name'])
