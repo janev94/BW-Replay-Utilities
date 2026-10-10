@@ -54,13 +54,9 @@ def parse_replay_header(content):
 
     headers['map_name'] = map_name
 
-
     player_data = get_player_data(decompressed[161: 161 + 432])
 
     for i in range(len(player_data)):
-
-        colour = read_int(buffer=decompressed, start_idx=593 + i*4)
-        print(f'Reading {i}: {colour}')
         player_data[i]['colour'] = read_int(buffer=decompressed, start_idx=593 + i*4)
 
     headers['player_info'] = player_data
@@ -104,7 +100,11 @@ def parse(fname):
         print(f"Warning: Replay file {fname} is of an older version, skipping...")
         return {}
 
-    headers = parse_replay_header(content)
+    try:
+        headers = parse_replay_header(content)
+    except Exception as e:
+        print(f"Error: Replay file {fname} could not be parsed at all, skipping...")
+        return {}
 
     return headers
 
